@@ -20,44 +20,8 @@ object Main {
       // and add the result to compilation unit.
       driver.run(uri, "object X { }")
 
-      pprint.log(driver.openedFiles)
+      // pprint.log(driver.openedFiles)
       // LinkedHashMap(file:///virtual -> /virtual)
-
-      pprint.log(driver.openedTrees(uri))
-      //  List(
-      //    SourceTree(
-      //      tree = TypeDef(
-      //        name = X$,
-      //        rhs = Template(
-      //          constr = DefDef(
-      //            name = <init>,
-      //            tparams = List(),
-      //            vparamss = List(List()),
-      //            tpt = TypeTree[TypeRef(ThisType(TypeRef(NoPrefix,module class scala)),class Unit)],
-      //            preRhs = Thicket(trees = List())
-      //          ),
-      //          parentsOrDerived = List(
-      //            Apply(
-      //              fun = Select(
-      //                qualifier = New(
-      //                  tpt = TypeTree[TypeRef(ThisType(TypeRef(NoPrefix,module class lang)),class Object)]
-      //                ),
-      //                name = <init>
-      //              ),
-      //              args = List()
-      //            )
-      //          ),
-      //          self = ValDef(
-      //            name = _,
-      //            tpt = SingletonTypeTree(ref = Ident(name = X)),
-      //            preRhs = Thicket(trees = List())
-      //          ),
-      //          preBody = List()
-      //        )
-      //      ),
-      //      source = /virtual
-      //    )
-      //  )
     }
 
     // ===============================================
@@ -67,13 +31,13 @@ object Main {
       val sourceParital = "object X { def x = 1.toSt } "
       val uriPartial = new URI("file:///partial")
       val diag = driver.run(uriPartial, sourceParital)
-      pprint.log(diag)
+      // pprint.log(diag)
       // List(
       //   class dotty.tools.dotc.reporting.Diagnostic$Error at /virtual:[19..21..25]: value toSt is not a member of Int - did you mean (1 : Int).toInt?,
       //   class dotty.tools.dotc.reporting.Diagnostic$Info at ?: 1 error found
       // )
 
-      pprint.log(driver.openedTrees(uriPartial))
+      // pprint.log(driver.openedTrees(uriPartial))
       // Mode.Interactive makes parser error resillient using <error> symbol?
       // ...
       // preBody = List(
@@ -91,7 +55,7 @@ object Main {
         Spans.Span(sourceParital.indexOf(".toSt") + ".toS".length) // run completion at "1.toS"
       )
       val completions = Completion.completions(pos)(using driver.currentCtx.fresh.setCompilationUnit(driver.compilationUnits.get(uriPartial).get))
-      pprint.log(completions)
+      println(completions)
       // (
       //   21,
       //   List(
@@ -102,6 +66,7 @@ object Main {
     }
 
 
+    /*
     // ===============================================
     // Find definition
     // ===============================================
@@ -116,7 +81,7 @@ object Main {
 
       // Feeding path to the pos, and return definition's tree
       val definitions = Interactive.findDefinitions(path, pos, driver)
-      pprint.log(definitions)
+      // pprint.log(definitions)
       // Oops, it founds the definition of x from another compilation unit
       //
       // List(
@@ -142,14 +107,16 @@ object Main {
       //   )
       // )
     }
+    */
   }
 
-  private def newDriver: InteractiveDriver = {
+
+  def newDriver: InteractiveDriver = {
     val fetch = Fetch.create()
 
     import scala.jdk.CollectionConverters._
     fetch.addDependencies(
-      Dependency.of("org.scala-lang", "scala3-library_3.0.0-M2", "3.0.0-M2")
+      Dependency.of("org.scala-lang", "scala3-library_3", "3.1.1")
     )
     val extraLibraries: Seq[Path] = fetch
       .fetch()
